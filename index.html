@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEAM RTP — Dashboard de chronométrage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ================= FOND DÉCORATIF ================= -->
+<div class="bg-grid" aria-hidden="true"></div>
+<div class="bg-glow" aria-hidden="true"></div>
+
+<!-- ================= HEADER ================= -->
+<header class="top-bar">
+  <div class="top-bar__brand">
+    <div class="logo-mark">RTP</div>
+    <div class="top-bar__titles">
+      <h1 class="top-bar__title">TEAM RTP</h1>
+      <p class="top-bar__subtitle">Dashboard de gestion de la Team RTP</p>
+    </div>
+  </div>
+
+  <div class="top-bar__meta">
+    <div class="live-clock">
+      <span class="live-dot" aria-hidden="true"></span>
+      <div class="live-clock__text">
+        <span id="live-date">--/--/----</span>
+        <span id="live-time">--:--:--</span>
+      </div>
+    </div>
+    <div class="circuit-pill">
+      <svg viewBox="0 0 24 24" class="icon-flag"><path d="M4 2v20M4 3h13l-2 4 2 4H4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <span>Grande Vallée — Long — Sens Classique</span>
+    </div>
+  </div>
+</header>
+
+<!-- ================= LAYOUT PRINCIPAL ================= -->
+<main class="dashboard">
+
+  <!-- ---------- STATISTIQUES ---------- -->
+  <section class="stat-row" aria-label="Statistiques de la team">
+    <div class="stat-card glass">
+      <span class="stat-card__label">Membres</span>
+      <span class="stat-card__value" id="stat-members">5</span>
+    </div>
+    <div class="stat-card glass">
+      <span class="stat-card__label">Véhicules enregistrés</span>
+      <span class="stat-card__value" id="stat-vehicles">6</span>
+    </div>
+    <div class="stat-card glass">
+      <span class="stat-card__label">Circuit officiel</span>
+      <span class="stat-card__value stat-card__value--sm">Grande Vallée Long</span>
+    </div>
+    <div class="stat-card glass stat-card--accent">
+      <span class="stat-card__label">Meilleur chrono</span>
+      <span class="stat-card__value" id="stat-best-time">1:48.254</span>
+    </div>
+    <div class="stat-card glass">
+      <span class="stat-card__label">Voiture la plus rapide</span>
+      <span class="stat-card__value stat-card__value--sm" id="stat-best-car">Porsche 911 Turbo S</span>
+    </div>
+    <div class="stat-card glass">
+      <span class="stat-card__label">Tours enregistrés</span>
+      <span class="stat-card__value" id="stat-laps">6</span>
+    </div>
+    <div class="stat-card glass">
+      <span class="stat-card__label">Meilleur secteur</span>
+      <span class="stat-card__value stat-card__value--sm" id="stat-best-sector">—</span>
+    </div>
+  </section>
+
+  <!-- ---------- CLASSEMENT PRINCIPAL ---------- -->
+  <section class="card glass card--wide" id="ranking-section">
+    <div class="card__head">
+      <h2><span class="card__num">01</span> Classement — Meilleurs chronos</h2>
+      <span class="badge-record" id="record-badge" hidden>🏆 Record du circuit battu !</span>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" class="icon-search"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <input type="text" id="search-input" placeholder="Rechercher une voiture...">
+      </div>
+      <div class="filter-group" role="group" aria-label="Filtres de catégorie">
+        <button class="filter-btn is-active" data-filter="Tout">Tout</button>
+        <button class="filter-btn" data-filter="BAC">BAC</button>
+        <button class="filter-btn" data-filter="Police">Police</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="ranking-table">
+        <thead>
+          <tr>
+            <th>Classement</th>
+            <th>Position</th>
+            <th>Voiture</th>
+            <th>Circuit</th>
+            <th>Temps</th>
+          </tr>
+        </thead>
+        <tbody id="ranking-body"><!-- généré par JS --></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ---------- FORMULAIRE D'AJOUT ---------- -->
+  <section class="card glass" id="form-section">
+    <div class="card__head">
+      <h2><span class="card__num">02</span> Ajouter un chrono</h2>
+    </div>
+    <form id="lap-form" class="lap-form">
+      <label class="field">
+        <span>Nom de la voiture</span>
+        <input type="text" id="input-car" placeholder="Ex : Mazda RX-7" required>
+      </label>
+      <label class="field">
+        <span>Temps (m:ss.mmm)</span>
+        <input type="text" id="input-time" placeholder="Ex : 1:56.320" pattern="^\d{1,2}:\d{2}\.\d{3}$" required>
+      </label>
+      <label class="field">
+        <span>Catégorie</span>
+        <select id="input-category">
+          <option value="Police">Police</option>
+          <option value="BAC">BAC</option>
+        </select>
+      </label>
+      <button type="submit" class="btn btn--primary">
+        <svg viewBox="0 0 24 24" class="icon-plus"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Ajouter le chrono
+      </button>
+      <p class="field-hint">Le tableau se trie automatiquement du meilleur au moins bon temps.</p>
+    </form>
+  </section>
+
+  <!-- ---------- TABLEAU STYLE GT7 ---------- -->
+  <section class="card glass card--wide gt7-panel">
+    <div class="card__head">
+      <h2><span class="card__num">03</span> Écran de chronométrage GT7</h2>
+    </div>
+    <div class="table-wrap">
+      <table class="gt7-table">
+        <thead>
+          <tr>
+            <th>POS</th>
+            <th>CAR</th>
+            <th>BEST LAP</th>
+            <th>LAST LAP</th>
+            <th>SECTOR 1</th>
+            <th>SECTOR 2</th>
+            <th>SECTOR 3</th>
+            <th>DELTA</th>
+          </tr>
+        </thead>
+        <tbody id="gt7-body"><!-- généré par JS --></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ---------- VOTE MODÉRATEURS ---------- -->
+  <section class="card glass" id="vote-section">
+    <div class="card__head">
+      <h2><span class="card__num">04</span> Vote — Police RP</h2>
+      <button class="btn btn--ghost" id="reset-votes-btn">Réinitialiser les votes</button>
+    </div>
+    <div class="vote-list" id="vote-list"><!-- généré par JS --></div>
+  </section>
+
+  <!-- ---------- ORGANIGRAMME ---------- -->
+  <section class="card glass" id="org-section">
+    <div class="card__head">
+      <h2><span class="card__num">05</span> Organigramme de la Team</h2>
+    </div>
+    <div class="org-chart">
+      <div class="org-node org-node--top">
+        <span class="badge badge--gold">Fondateur</span>
+        <span class="org-name">yasumi-juju-17</span>
+      </div>
+      <div class="org-cofounders">
+        <div class="org-node org-node--top">
+          <span class="badge badge--silver">Cofondateur</span>
+          <span class="org-name">lacoste-jordan</span>
+        </div>
+        <div class="org-node org-node--top">
+          <span class="badge badge--silver">Cofondateur</span>
+          <span class="org-name">Tom_Gamer035</span>
+        </div>
+      </div>
+      <div class="org-divider"><span>Modérateurs</span></div>
+      <div class="org-mods">
+        <div class="org-node">
+          <span class="badge badge--cyan">Modérateur</span>
+          <span class="org-name">Zefrox_38</span>
+        </div>
+        <div class="org-node">
+          <span class="badge badge--cyan">Modérateur</span>
+          <span class="org-name">skahlard29</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>TEAM RTP — Simulation de chronométrage inspirée de Gran Turismo 7 · Usage Role Play uniquement</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
